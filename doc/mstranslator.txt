@@ -1,0 +1,53 @@
+*mstranslator.txt* Set statusline at quickfix error list.
+
+Author:  KazuakiM <twitter@NanohaAsOnKai>
+License: MIT License.
+
+==============================================================================
+CONTENTS					*mstranslator-contents*
+
+INTRODUCTION			|mstranslator-introduction|
+INTERFACE			|mstranslator-interface|
+  VARIABLES			  |mstranslator-variables|
+  COMMANDS			  |mstranslator-commands|
+  FUNCTIONS			  |mstranslator-functions|
+
+==============================================================================
+INTRODUCTION					*mstranslator-introduction*
+
+This plugin is Microsoft Translator API Client.
+Microsoft Translator API is "https://www.microsoft.com/en-us/translator/".
+
+==============================================================================
+INTERFACE					*mstranslator-interface*
+
+------------------------------------------------------------------------------
+VARIABLES					*mstranslator-variables*
+
+g:mstranslator#Config = {}			*g:mstranslator#Config*
+	This variable is oauth setting variable.
+
+(require)
+				*g:mstranslator#Config.subscription_key*
+g:mstranslator#Config.subscription_key = {value}
+	This variable is oauth subscription_key.
+
+(options)
+						*g:mstranslator#Config.to*
+g:mstranslator#Config.to = {value}
+	This variable is translation destination. default is 'en'
+
+------------------------------------------------------------------------------
+COMMANDS					*mstranslator-commands*
+
+:Mstranslator {values}				*:Mstranslator*
+	Execute |mstranslator#execute()| program.
+
+------------------------------------------------------------------------------
+FUNCTIONS					*mstranslator-functions*
+
+mstranslator#execute()				*mstranslator#execute()*
+	return translate text.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl
