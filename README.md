@@ -8,7 +8,7 @@ Microsoft Translator API is "https://www.microsoft.com/en-us/translator/".
 ## Usage
 
 1. You can get subscription_key for Microsoft Translator API.
-1. You set to vimrc or something. I think you should don't public this setting
+1. You set to vimrc or something. I think you should not public this setting
    ```vim
    let g:mstranslator#Config = {
    \     'subscription_key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'

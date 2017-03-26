@@ -37,6 +37,9 @@ g:mstranslator#Config.subscription_key = {value}
 g:mstranslator#Config.to = {value}
 	This variable is translation destination. default is 'en'
 
+g:mstranslator#Config.from = {value}
+	This variable is translation destination. default is 'ja'
+
 ------------------------------------------------------------------------------
 COMMANDS					*mstranslator-commands*
 

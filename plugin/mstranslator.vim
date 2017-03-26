@@ -5,3 +5,4 @@ let g:loaded_mstranslator  = 1
 
 command! -nargs=* Mstranslator :call mstranslator#execute(<f-args>)
 command! -nargs=1 MstranslatorTo :call mstranslator#setTo(<f-args>)
+command! -nargs=1 MstranslatorFrom :call mstranslator#setFrom(<f-args>)
