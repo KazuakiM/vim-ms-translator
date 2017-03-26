@@ -11,6 +11,7 @@ if !exists('g:mstranslator#Config') || !has_key(g:mstranslator#Config, 'subscrip
 endif
 let g:mstranslator#Config.to = !has_key(g:mstranslator#Config, 'to') ? 'en' : g:mstranslator#Config.to
 let g:mstranslator#Config.from = !has_key(g:mstranslator#Config, 'from') ? 'ja' : g:mstranslator#Config.from
+let g:mstranslator#Config.strict = !has_key(g:mstranslator#Config, 'strict') ? 0 : g:mstranslator#Config.strict
 
 let s:token = ''
 
@@ -26,6 +27,10 @@ function! mstranslator#setFrom(from) abort "{{{
     let g:mstranslator#Config.from = a:from
 endfunction "}}}
 
+function! mstranslator#setStrict(strict) abort "{{{
+    let g:mstranslator#Config.strict = a:strict
+endfunction "}}}
+
 function! mstranslator#issueToken() abort "{{{
     let l:response = s:V.Web.HTTP.post('https://api.cognitive.microsoft.com/sts/v1.0/issueToken', '', {
     \     'Ocp-Apim-Subscription-Key': g:mstranslator#Config.subscription_key
@@ -39,7 +44,7 @@ function! mstranslator#request(retry, text) abort "{{{
     endif
 
     let l:to = g:mstranslator#Config.to
-    if g:mstranslator#Config.to ==# 'en' && 0 <= match(a:text, '\w')
+    if g:mstranslator#Config.to ==# 'en' && g:mstranslator#Config.strict ==# 0 && 0 <= match(a:text[0], '\w')
         let l:to = g:mstranslator#Config.from
     endif
 
@@ -56,7 +61,7 @@ function! mstranslator#request(retry, text) abort "{{{
     endif
 
     let l:responseXml = s:V.Web.XML.parse(l:responseRaw.content)
-    return l:responseXml.child
+    return join(l:responseXml.child)
 endfunction "}}}
 
 function! mstranslator#execute(...) abort "{{{
@@ -70,7 +75,7 @@ function! mstranslator#execute(...) abort "{{{
 
     let l:response = mstranslator#request(0, l:text)
     if 0 < len(l:response)
-        cgetexpr l:response
+        cgetexpr l:text . "\n" . l:response
         copen
     endif
 endfunction "}}}

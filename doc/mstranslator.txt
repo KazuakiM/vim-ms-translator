@@ -40,6 +40,9 @@ g:mstranslator#Config.to = {value}
 g:mstranslator#Config.from = {value}
 	This variable is translation destination. default is 'ja'
 
+g:mstranslator#Config.strict = {value}
+	This variable is strictly translation. default is '0'
+
 ------------------------------------------------------------------------------
 COMMANDS					*mstranslator-commands*
 
