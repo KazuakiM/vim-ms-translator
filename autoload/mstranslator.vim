@@ -51,6 +51,7 @@ function! mstranslator#request(retry, text) abort "{{{
     let l:responseRaw = s:V.Web.HTTP.get('http://api.microsofttranslator.com/v2/Http.svc/Translate?text=' . a:text .'&to=' . l:to, '', {
     \     'Authorization': 'Bearer ' . s:token
     \ })
+
     if len(l:responseRaw) ==# 0 || l:responseRaw.status !=# 200
         if 2 <= a:retry
             return ''
@@ -73,7 +74,7 @@ function! mstranslator#execute(...) abort "{{{
         endif
     endif
 
-    let l:response = mstranslator#request(0, l:text)
+    let l:response = mstranslator#request(0, s:V.Web.HTTP.escape(l:text))
     if 0 < len(l:response)
         cgetexpr l:text . "\n" . l:response
         copen
