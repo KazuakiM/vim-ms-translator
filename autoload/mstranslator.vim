@@ -5,18 +5,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 "variable {{{
-if !exists('g:mstranslator#Config') || !has_key(g:mstranslator#Config, 'subscription_key')
-    echohl ErrorMsg | echomsg "vim-ms-translator: require g:mstranslator#Config = {'subscription_key'}" | echohl None
-    finish
-endif
-let g:mstranslator#Config.to = !has_key(g:mstranslator#Config, 'to') ? 'en' : g:mstranslator#Config.to
-let g:mstranslator#Config.from = !has_key(g:mstranslator#Config, 'from') ? 'ja' : g:mstranslator#Config.from
-let g:mstranslator#Config.strict = !has_key(g:mstranslator#Config, 'strict') ? 0 : g:mstranslator#Config.strict
-
 let s:token = ''
-
 let s:V = vital#of('mstranslator').load('Web.HTTP', 'Web.XML')
-lockvar! s:V
 "}}}
 
 function! mstranslator#setTo(to) abort "{{{
@@ -31,24 +21,19 @@ function! mstranslator#setStrict(strict) abort "{{{
     let g:mstranslator#Config.strict = a:strict
 endfunction "}}}
 
-function! mstranslator#issueToken() abort "{{{
+function! mstranslator#issueToken(...) abort "{{{
     let l:response = s:V.Web.HTTP.post('https://api.cognitive.microsoft.com/sts/v1.0/issueToken', '', {
     \     'Ocp-Apim-Subscription-Key': g:mstranslator#Config.subscription_key
     \ })
     let s:token = l:response.content
 endfunction "}}}
 
-function! mstranslator#request(retry, text) abort "{{{
+function! mstranslator#request(retry, text, to) abort "{{{
     if len(s:token) ==# 0
         call mstranslator#issueToken()
     endif
 
-    let l:to = g:mstranslator#Config.to
-    if g:mstranslator#Config.to ==# 'en' && g:mstranslator#Config.strict ==# 0 && 0 <= match(a:text[0], '\w')
-        let l:to = g:mstranslator#Config.from
-    endif
-
-    let l:responseRaw = s:V.Web.HTTP.get('http://api.microsofttranslator.com/v2/Http.svc/Translate?text=' . a:text .'&to=' . l:to, '', {
+    let l:responseRaw = s:V.Web.HTTP.get('http://api.microsofttranslator.com/v2/Http.svc/Translate?text=' . a:text .'&to=' . a:to, '', {
     \     'Authorization': 'Bearer ' . s:token
     \ })
 
@@ -58,11 +43,23 @@ function! mstranslator#request(retry, text) abort "{{{
         endif
 
         let s:token = ''
-        return mstranslator#request(a:retry + 1, a:text)
+        return mstranslator#request(a:retry + 1, a:text, a:to)
     endif
 
     let l:responseXml = s:V.Web.XML.parse(l:responseRaw.content)
     return join(l:responseXml.child)
+endfunction "}}}
+
+function! mstranslator#checkLang(text) abort "{{{
+    if g:mstranslator#Config.to ==# 'en' && g:mstranslator#Config.strict ==# 0
+        for l:index in range(len(a:text))
+            if match(a:text[l:index], "[\'\?\!\.\ 0-9A-Za-z_]") ==# -1
+                return g:mstranslator#Config.to
+            endif
+        endfor
+        return g:mstranslator#Config.from
+    endif
+    return g:mstranslator#Config.to
 endfunction "}}}
 
 function! mstranslator#execute(...) abort "{{{
@@ -74,9 +71,15 @@ function! mstranslator#execute(...) abort "{{{
         endif
     endif
 
-    let l:response = mstranslator#request(0, s:V.Web.HTTP.escape(l:text))
+    let l:to = mstranslator#checkLang(l:text)
+
+    let l:response = mstranslator#request(0, s:V.Web.HTTP.escape(l:text), l:to)
     if 0 < len(l:response)
-        cgetexpr l:text . "\n" . l:response
+        let l:return = [l:text, l:response]
+        if l:to !=# g:mstranslator#Config.to
+            call add(l:return, "\nWARNING: This translate is swapped \"from\" and \"to\".\n\n\tYou can execute strict mode.\n\t:MstranslatorStrict(1)")
+        endif
+        cgetexpr join(l:return, "\n")
         copen
     endif
 endfunction "}}}

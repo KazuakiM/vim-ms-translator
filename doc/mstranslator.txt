@@ -35,13 +35,16 @@ g:mstranslator#Config.subscription_key = {value}
 (options)
 						*g:mstranslator#Config.to*
 g:mstranslator#Config.to = {value}
-	This variable is translation destination. default is 'en'
+	This variable is translation destination. default is 'en'.
 
 g:mstranslator#Config.from = {value}
-	This variable is translation destination. default is 'ja'
+	This variable is translation destination. default is 'ja'.
 
 g:mstranslator#Config.strict = {value}
-	This variable is strictly translation. default is '0'
+	If you want strictly translation, you set '1'.
+
+g:mstranslator#Config.timers = {value}
+	If you want to automatically issue token, you set '1'.
 
 ------------------------------------------------------------------------------
 COMMANDS					*mstranslator-commands*
