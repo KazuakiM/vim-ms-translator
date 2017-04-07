@@ -22,10 +22,9 @@ function! mstranslator#setStrict(strict) abort "{{{
 endfunction "}}}
 
 function! mstranslator#issueToken(...) abort "{{{
-    let l:response = s:V.Web.HTTP.post('https://api.cognitive.microsoft.com/sts/v1.0/issueToken', '', {
+    let s:token = s:V.Web.HTTP.post('https://api.cognitive.microsoft.com/sts/v1.0/issueToken', '', {
     \     'Ocp-Apim-Subscription-Key': g:mstranslator#Config.subscription_key
-    \ })
-    let s:token = l:response.content
+    \ }).content
 endfunction "}}}
 
 function! mstranslator#request(retry, text, to) abort "{{{
@@ -46,8 +45,7 @@ function! mstranslator#request(retry, text, to) abort "{{{
         return mstranslator#request(a:retry + 1, a:text, a:to)
     endif
 
-    let l:responseXml = s:V.Web.XML.parse(l:responseRaw.content)
-    return join(l:responseXml.child)
+    return join(s:V.Web.XML.parse(l:responseRaw.content).child)
 endfunction "}}}
 
 function! mstranslator#checkLang(text) abort "{{{
